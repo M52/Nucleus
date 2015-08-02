@@ -1,4 +1,5 @@
 <?php
+include("Nucleus/core.php");
 // This class is responsible for creating a database or connecting to an existing one.
 class NucleusDatabase {
 
@@ -19,12 +20,15 @@ class NucleusDatabase {
 
 
 		// Connection can't be made so the object becomes null
-		$connection = new mysqli($this->servername, $this->username, $this->password);
+		$this->connection = new mysqli($this->servername, $this->username, $this->password);
 
 		//Check if the connection was sucessfully established.
 		if ($this->connection->connect_error)
 		{
 			die("Connection failed: " . $this->connection->connect_error);
+
+		} else {
+			NucleusUtility::ShowError("Connection to DB succesfull");
 		}
 
 
