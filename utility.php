@@ -15,12 +15,18 @@ class NucleusUtility {
 
 	}
 
-	public static function ShowError($msg)
+	public static function Error($msg)
 	{
 		// Every static method in this class needs to call self::Initialize();
 		self::Initialize();
 		echo "<center><div>".$msg."</div></center>";
-		die("Error");
+	}
+
+	public static function Debug($header, $msg)
+	{
+		self::Initialize();
+		echo "<center><div style='width:400px;height:auto;background:#aeaeae;border:1px solid black;font-family:Tahoma;'><h4>".$header."
+		</h4><p style='color:#1f1f1f;'>".$msg."</p></div></center>";
 	}
 }
 ?>

@@ -4,7 +4,8 @@ include("Nucleus/core.php");
 class NucleusDatabase {
 
 	// The private members of this class.
-	private $servername = "localhost";
+	private $host = "localhost";
+	private $database_name = "";
 	private $username = "";
 	private $password = "";
 
@@ -17,9 +18,15 @@ class NucleusDatabase {
 		$this->servername = $_servername;
 		$this->username = $_username;
 		$this->password = $_password;
+	}
 
+	public function Connect()
+	{
+		// If a connection was previously established, terminate it first then restart.
+		if (isset($this->connection))
+			$this->Close();
 
-		// Connection can't be made so the object becomes null
+		// Establish a new connection
 		$this->connection = new mysqli($this->servername, $this->username, $this->password);
 
 		//Check if the connection was sucessfully established.
@@ -27,22 +34,49 @@ class NucleusDatabase {
 		{
 			die("Connection failed: " . $this->connection->connect_error);
 
+		// REFACTOR. Temporary code.
 		} else {
-			NucleusUtility::ShowError("Connection to DB succesfull");
+			NucleusUtility::Debug("Succes!", "Connection to DB succesfull");
 		}
-
-
+		// REFACTOR.
 	}
 
 	public function CreateDatabase($name)
 	{
 		// A local string to hold our sql query.
-		$sql = "CREATE DATABASE " . $name . ";";
+		$sql = "CREATE DATABASE IF NOT EXISTS " . $name . ";";
+
+		// Make sure a connection exists.
+		if (!isset($this->connection))
+			$this->Connect();
+
 		if ($this->connection->query($sql) === TRUE) {
-			echo "Database created successfully";
+			NucleusUtility::Debug("Succes!", "Database ".$name." created successfully");
+
+			// Fill db with tables
+			$this->QueryFromSQLFile("test.sql");
+
 		} else {
-			echo "Error creating database: " . $conn->error;
-}
+			NucleusUtility::Debug("Error creating database:", $this->connection->error);
+		}
+	}
+
+	public function QueryFromSQLFile($file)
+	{
+		$cmd = 'mysql' 
+		.' --host='.$this->host
+		.' --user='.$this->username
+		.' --password='.""
+		.' --database='.$this->database_name
+		.' --execute="SOURCE '.getcwd().'//'.$file.'"';
+		echo $cmd;
+		$result = shell_exec($cmd);
+		echo $result;
+	}
+
+	public function CreateUser($username, $password)
+	{
+
 	}
 
 	public function Close()
