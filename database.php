@@ -8,80 +8,44 @@ class NucleusDatabase {
 	private $database_name = "";
 	private $username = "";
 	private $password = "";
-
-	// This member holds the connection.
 	private $connection;
 
 	// The constructor method for this class.
-	function __construct($_servername, $_username, $_password)
+	function __construct($_servername, $_username, $_password, $_dbname)
 	{
 		$this->servername = $_servername;
 		$this->username = $_username;
 		$this->password = $_password;
-	}
+		$this->database_name = $_dbname;
 
-	public function Connect()
-	{
-		// If a connection was previously established, terminate it first then restart.
-		if (isset($this->connection))
-			$this->Close();
-
-		// Establish a new connection
-		$this->connection = new mysqli($this->servername, $this->username, $this->password);
-
-		//Check if the connection was sucessfully established.
-		if ($this->connection->connect_error)
-		{
-			die("Connection failed: " . $this->connection->connect_error);
-
-		// REFACTOR. Temporary code.
-		} else {
-			NucleusUtility::Debug("Succes!", "Connection to DB succesfull");
-		}
-		// REFACTOR.
-	}
-
-	public function CreateDatabase($name)
-	{
-		// A local string to hold our sql query.
-		$sql = "CREATE DATABASE IF NOT EXISTS " . $name . ";";
-
-		// Make sure a connection exists.
+		//$this->CreateDatabase();
+		$sql = "CREATE DATABASE IF NOT EXISTS " . $this->database_name . ";";
 		if (!isset($this->connection))
 			$this->Connect();
-
 		if ($this->connection->query($sql) === TRUE) {
-			NucleusUtility::Debug("Succes!", "Database ".$name." created successfully");
+			// Fill db with tables, if empty. We do not use this->Query here because we don't want to die on failure
+			$check_table = mysqli_query($this->connection, "SELECT id FROM Users;");
 
-			// Fill db with tables
-			$this->QueryFromSQLFile("test.sql");
+			if (empty($check_table))
+				$this->Query("CREATE TABLE Users(id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY, name VARCHAR(60) NOT NULL, password VARCHAR(60) NOT NULL);");
 
 		} else {
 			NucleusUtility::Debug("Error creating database:", $this->connection->error);
 		}
 	}
 
-	public function QueryFromSQLFile($file)
+	private function Connect()
 	{
-		$cmd = 'mysql' 
-		.' --host='.$this->host
-		.' --user='.$this->username
-		.' --password='.""
-		.' --database='.$this->database_name
-		.' --execute="SOURCE '.getcwd().'//'.$file.'"';
-		echo $cmd;
-		$result = shell_exec($cmd);
-		echo $result;
+		// Establish a new connection
+		$this->connection = mysqli_connect($this->servername, $this->username, $this->password, $this->database_name) or die("Error: " . mysqli_error($this->connection));
 	}
 
-	public function CreateUser($username, $password)
+	public function Query($query)
 	{
-
-	}
-
-	public function Close()
-	{
-		$this->connection->close();
+		if (isset($this->connection))
+		{
+			mysqli_query($this->connection, $query) or die("A MySQL error has occurred.<br />Error:" . mysqli_error($this->connection));
+		}
 	}
 }
 ?>
