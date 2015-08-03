@@ -39,7 +39,7 @@ class NucleusDatabase {
 		if (isset($this->connection))
 		{
 			$result = mysqli_query($this->connection, $query);
-			if (isset($result) && !empty($result))
+			if (isset($result) || empty($result))
 				return $result;
 		}
 		return null;
