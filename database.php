@@ -71,7 +71,7 @@ class NucleusDatabase {
 		*/
 		
 		$users = array();
-		$result = $this->Query("SELECT * FROM Users WHERE name='{$username}';");
+		$result = $this->Query("SELECT * FROM Users WHERE name='{$_username}';");
 		while($row = mysqli_fetch_assoc($result))
 		{
 			$user = new NucleusUser($row["id"], $row["name"], $row["password"]);
@@ -80,5 +80,17 @@ class NucleusDatabase {
 
 		return $users;
 	}
+
+	// REFACTOR Temporary Function
+	public function EncryptPassword($_password)
+	{
+		$cost = 10;
+		$salt = strtr(base64_encode(mcrypt_create_iv(16, MCRYPT_DEV_URANDOM)), '+', '.');
+		$salt = sprintf("$2a$%02d$", $cost) . $salt;
+		echo "<br />";
+		$hash = crypt($_password, $salt);
+		echo "<br />Hash: " . $hash . "<br />";
+	}
+	// REFACTOR
 }
 ?>
