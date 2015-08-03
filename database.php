@@ -18,12 +18,15 @@ class NucleusDatabase {
 		$this->password = $_password;
 		$this->database_name = $_dbname;
 
-		//$this->CreateDatabase();
 		$sql = "CREATE DATABASE IF NOT EXISTS " . $this->database_name . ";";
-		if (!isset($this->connection))
-			$this->connection = mysqli_connect($this->servername, $this->username, $this->password, $this->database_name) or die("Error: " . mysqli_error($this->connection));
-		if ($this->connection->query($sql) === TRUE) {
 
+		if (!isset($this->connection))
+			NucleusUtility::Debug("test", "Connection is not set.");
+			$this->connection = new mysqli($this->servername, $this->username, $this->password) or die("Error: " . mysqli_error($this->connection));
+
+		if ($this->connection->query($sql) === TRUE) {
+			$this->connection->Close();
+			$this->connection = mysqli_connect($this->servername, $this->username, $this->password, $this->database_name);
 			// Fill db with tables, if empty. We do not use this->Query here because we don't want to die on failure
 			if ($this->TableNotExists("Users"))
 				$this->Query("CREATE TABLE Users(id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY, name VARCHAR(60) NOT NULL, password VARCHAR(60) NOT NULL);");
