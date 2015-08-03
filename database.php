@@ -24,17 +24,9 @@ class NucleusDatabase {
 			$this->connection = mysqli_connect($this->servername, $this->username, $this->password, $this->database_name) or die("Error: " . mysqli_error($this->connection));
 		if ($this->connection->query($sql) === TRUE) {
 
-			/*
 			// Fill db with tables, if empty. We do not use this->Query here because we don't want to die on failure
-			$check_table = mysqli_query($this->connection, "SELECT id FROM Users;");
-
-			if (empty($check_table))
-			{
+			if ($this->TableNotExists("Users"))
 				$this->Query("CREATE TABLE Users(id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY, name VARCHAR(60) NOT NULL, password VARCHAR(60) NOT NULL);");
-			}
-			*/
-			$this->QueryFromFile("/test.sql");
-
 		} else {
 			NucleusUtility::Debug("Error creating database:", $this->connection->error);
 		}
@@ -44,16 +36,16 @@ class NucleusDatabase {
 	{
 		if (isset($this->connection))
 		{
-			mysqli_query($this->connection, $query) or die("A MySQL error has occurred.<br />Error:" . mysqli_error($this->connection));
+			$result = mysqli_query($this->connection, $query);
+			if (isset($result) && !empty($result))
+				return $result;
 		}
+		return null;
 	}
 
-	public function QueryFromFile($file)
+	private function TableNotExists($_tablename_)
 	{
-		$command = "mysql -u{$this->username} -p{$this->password} -h {$this->host} -D {$this->database_name} < {$file}";
-		$output = shell_exec($command);
-		echo $output;
-		echo $command;
+		return empty(mysqli_query($this->connection, "SELECT * FROM {$_tablename_} LIMIT 1"));
 	}
 }
 ?>
