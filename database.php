@@ -21,7 +21,6 @@ class NucleusDatabase {
 		$sql = "CREATE DATABASE IF NOT EXISTS " . $this->database_name . ";";
 
 		if (!isset($this->connection))
-			NucleusUtility::Debug("test", "Connection is not set.");
 			$this->connection = new mysqli($this->servername, $this->username, $this->password) or die("Error: " . mysqli_error($this->connection));
 
 		if ($this->connection->query($sql) === TRUE) {
