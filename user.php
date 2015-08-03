@@ -21,7 +21,7 @@ class NucleusUser {
 
 	public function getPassword()
 	{
-		return $this->name;
+		return $this->password;
 	}
 }
 ?>
