@@ -1,0 +1,20 @@
+TODO:
+
+1. Investigate MVC Model.
+1a. SQL From SQL Files
+2. Make Database queries prepared statements.
+3. Consider switching to PDO.
+4. File uploader
+5. WYSIWYG Editor, Media embedding
+6. Twitter & facebook embedding?
+7. Installer
+8. Add page functionality.
+9. Error logging
+10. Edit & delete pages.
+11. user registration & logout.
+12. user rights (admin)
+13. Enable/Disable Nucleus features through settings file/table (db)entry.
+14. Admin panel
+
+NucleusRegistrationEnabled = false;
+NucleusMaintainanceModeEnabled = true;

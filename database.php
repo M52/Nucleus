@@ -57,9 +57,19 @@ class NucleusDatabase {
 	*/
 
 	// Will query the database for a specific user.
-	public function getUsersByName($username)
+	public function getUsersByName($_username)
 	{
-		//$users_array[];
+		// TODO: Add prepared statements for safety reasons.
+		/*$username = $_username;
+		$statement = $this->connection->prepare("SELECT * FROM Users WHERE name=?;");
+		$statement->bind_param("s", $username);
+		$statement->execute();
+
+		$statement->bind_result($result);
+
+		print_r($result);
+		*/
+		
 		$users = array();
 		$result = $this->Query("SELECT * FROM Users WHERE name='{$username}';");
 		while($row = mysqli_fetch_assoc($result))
