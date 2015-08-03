@@ -10,7 +10,12 @@ class NucleusDatabase {
 	private $password = "";
 	private $connection;
 
-	// The constructor method for this class.
+	/*
+	This constructor performs the following operations:
+	1. Checks if there is an existing connection (should never happen, technically).
+	2. Checks if the requested database exists. If it does not exist it is created.
+	3. Creation sets up required tables and constraints but does not fill them.
+	*/
 	function __construct($_servername, $_username, $_password, $_dbname)
 	{
 		$this->servername = $_servername;
@@ -34,20 +39,36 @@ class NucleusDatabase {
 		}
 	}
 
+	// Use this method to directly query the database.
 	public function Query($query)
 	{
-		if (isset($this->connection))
-		{
-			$result = mysqli_query($this->connection, $query);
-			if (isset($result) || empty($result))
-				return $result;
-		}
-		return null;
+		if (!isset($this->connection))
+			die("No connection established");
+		return mysqli_query($this->connection, $query); //or die("MySQL Error. Please check your SQL Query: ".$query);
 	}
 
 	private function TableNotExists($_tablename_)
 	{
 		return empty(mysqli_query($this->connection, "SELECT * FROM {$_tablename_} LIMIT 1"));
+	}
+
+	/*
+	API Methods.
+	*/
+
+	// Will query the database for a specific user.
+	public function getUsersByName($username)
+	{
+		//$users_array[];
+		$users = array();
+		$result = $this->Query("SELECT * FROM Users WHERE name='{$username}';");
+		while($row = mysqli_fetch_assoc($result))
+		{
+			$user = new NucleusUser($row["id"], $row["name"], $row["password"]);
+			$users[] = $user;
+		}
+
+		return $users;
 	}
 }
 ?>
