@@ -44,13 +44,14 @@ class NucleusInstaller
 		if ($_NucleusDatabaseObj->hasConnection())
 		{
 			$_NucleusDatabaseObj->Query("USE {$_NucleusDatabaseObj->getDatabaseName()};");
-
+			NucleusUtility::Debug(__CLASS__."::".__LINE__." (".__FILE__.")", "Established connection with Database {$_NucleusDatabaseObj->getDatabaseName()}");
 			if ($_NucleusDatabaseObj->TableExists(self::$TABLE_USER))
 				$_NucleusDatabaseObj->Query("DROP TABLE ".self::$TABLE_USER);
 			if ($_NucleusDatabaseObj->TableExists(self::$TABLE_GENDER))
 				$_NucleusDatabaseObj->Query("DROP TABLE ".self::$TABLE_GENDER);
 			$_NucleusDatabaseObj->Query(SQL_CREATE_N_USER);
 			$_NucleusDatabaseObj->Query(SQL_CREATE_N_GENDER);
+			NucleusUtility::Debug(__CLASS__."::".__LINE__." (".__FILE__.")", "Tables N_USER & N_GENDER created.");
 			$_NucleusDatabaseObj->Query("INSERT INTO ".self::$TABLE_GENDER." (gender_id, gender) VALUES (0, 'MALE')");
 			$_NucleusDatabaseObj->Query("INSERT INTO ".self::$TABLE_GENDER." (gender_id, gender) VALUES (1, 'FEMALE')");
 			$_NucleusDatabaseObj->Query("INSERT INTO ".self::$TABLE_GENDER." (gender_id, gender) VALUES (2, 'OTHER')");
