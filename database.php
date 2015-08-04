@@ -31,9 +31,6 @@ class NucleusDatabase {
 		if ($this->connection->query($sql) === TRUE) {
 			$this->connection->Close();
 			$this->connection = mysqli_connect($this->servername, $this->username, $this->password, $this->database_name);
-			// Fill db with tables, if empty. We do not use this->Query here because we don't want to die on failure
-			if ($this->TableNotExists("Users"))
-				$this->Query("CREATE TABLE Users(id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY, name VARCHAR(60) NOT NULL, password VARCHAR(60) NOT NULL);");
 		} else {
 			NucleusUtility::Debug("Error creating database:", $this->connection->error);
 		}
@@ -44,12 +41,27 @@ class NucleusDatabase {
 	{
 		if (!isset($this->connection))
 			die("No connection established");
-		return mysqli_query($this->connection, $query); //or die("MySQL Error. Please check your SQL Query: ".$query);
+		$result = mysqli_query($this->connection, $query);
+		if ($result)
+			return $result;
+		else
+			die("MySQL Error. Please check your SQL Query: ".$query."<br />ErrorNo: ". mysqli_error($this->connection));
+		//return mysqli_query($this->connection, $query); //or die("MySQL Error. Please check your SQL Query: ".$query);
 	}
 
-	private function TableNotExists($_tablename_)
+	public function TableExists($_tablename_)
 	{
-		return empty(mysqli_query($this->connection, "SELECT * FROM {$_tablename_} LIMIT 1"));
+		return !empty(mysqli_query($this->connection, "SELECT * FROM {$_tablename_} LIMIT 1"));
+	}
+
+	public function getDatabaseName()
+	{
+		return $this->database_name;
+	}
+
+	public function hasConnection()
+	{
+		return (isset($this->connection));
 	}
 
 	/*
@@ -81,16 +93,6 @@ class NucleusDatabase {
 		return $users;
 	}
 
-	// REFACTOR Temporary Function
-	public function EncryptPassword($_password)
-	{
-		$cost = 10;
-		$salt = strtr(base64_encode(mcrypt_create_iv(16, MCRYPT_DEV_URANDOM)), '+', '.');
-		$salt = sprintf("$2a$%02d$", $cost) . $salt;
-		echo "<br />";
-		$hash = crypt($_password, $salt);
-		echo "<br />Hash: " . $hash . "<br />";
-	}
-	// REFACTOR
+
 }
 ?>
