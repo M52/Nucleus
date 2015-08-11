@@ -1,5 +1,4 @@
 <?php
-include("Nucleus/core.php");
 // This class is responsible for creating a database or connecting to an existing one.
 class NucleusDatabase {
 
